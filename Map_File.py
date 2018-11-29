@@ -1,17 +1,22 @@
 from copy import deepcopy
 
 
-class MapFile:
-    iteration = 0
+class MapFile:                                      #Klasa zawierające dane pliku mapy oraz metody umożliwiajace
+                                                    # ustalenie polityki ruchu aktora
 
+    iteration = 0                                   #Zmienna przechowująca liczbę iteracji pętli głównej algorytmu MDP
     gamma = 0.5
-    moves=[[[-1, 0], [0, 1], [0, -1]],  #UP
-           [[0, 1], [1, 0], [-1, 0]],  # RIGHT
-           [[1, 0], [0, 1], [0, -1]],  #DOWN
-           [[0, -1], [1, 0], [-1, 0]]]  #LEFT
+    moves=[[[-1, 0], [0, 1], [0, -1]],
+           [[0, 1], [1, 0], [-1, 0]],
+           [[1, 0], [0, 1], [0, -1]],
+           [[0, -1], [1, 0], [-1, 0]]]              # Tablica możliwych ruchów aktora w osiach X i Y, o współrzędnych
+                                                    # i, j, k, gdzie i oznacza kolejne kierunki UP, RIGHT, DOWN, LEFT,
+                                                    # j reprezentuje ruch główny oraz możliwe ruchy w kierunkach
+                                                    # prostopadłych do kierunku ruchu głównego, a k reprezentuje ruchy
+                                                    # w osi x i y
 
 
-    def __init__(self, map_hot_floor, map_types):
+    def __init__(self, map_hot_floor, map_types):   #Inicjalizacja pliku mapy
 
         self.map_types = map_types
         self.map_height=len(map_types)
@@ -21,7 +26,7 @@ class MapFile:
                                         for z in range(self.map_height * self.map_width)]
         self.map_rewards = [[0 for x in range(self.map_width)] for y in range(self.map_height)]
 
-        for i in range(self.map_height):
+        for i in range(self.map_height):            # Automatyczne przydzielanie wartości nagród na podstawie  typu pola
             for j in range(self.map_width):
                 if map_hot_floor == 0:
                     if self.map_types[i][j] == 0:
@@ -42,7 +47,7 @@ class MapFile:
                     else:
                         self.map_rewards[i][j] = -100
 
-    def MDP_algorithm(self):
+    def MDP_algorithm(self):                        # Algorytm wyznaczania polityki ruchu
 
         self.map_value = deepcopy(self.map_rewards)
 
@@ -57,7 +62,7 @@ class MapFile:
                         self.map_value[i][j] = self.map_rewards[i][j] + self.gamma * self.best_action(i, j)
 
                         if abs(self.map_value[i][j] - self.map_value_old[i][j]) > difference:
-                            difference = deepcopy(abs(self.map_value[i][j] - self.map_value_old[i][j]))
+                            difference = abs(self.map_value[i][j] - self.map_value_old[i][j])
 
             self.iteration += 1
 
@@ -65,7 +70,7 @@ class MapFile:
                 break
 
 
-    def best_action(self, x, y):    # Wybór najlepszej akcji
+    def best_action(self, x, y):    # Wybór najlepszej akcji dla danego pola
         field_value = [0, 0, 0, 0]
         for i in range(4):
             for j in range(len(self.map_moves_probabilities[0][0])):
