@@ -5,7 +5,10 @@ from Map_File import *
 def button_submit_action():
     for i in range(len(map_types_entries)):
         for j in range(len(map_types_entries[i])):
-            map_types[i][j] = int(map_types_entries[i][j].get())
+            try:
+                map_types[i][j] = int(map_types_entries[i][j].get())
+            except ValueError:
+                map_types[i][j] = -2
 
     map = MapFile(hot_floor.get(), map_types)
 

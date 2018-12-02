@@ -36,7 +36,8 @@ class MapFile:                                      #Klasa zawierające dane pli
                     elif self.map_types[i][j] == 2:
                         self.map_rewards[i][j] = 100
                     else:
-                        self.map_rewards[i][j] = -100
+                        self.map_types[i][j] = -2
+                        self.map_rewards[i][j] = -10
                 elif map_hot_floor == 1:
                     if self.map_types[i][j] == 0:
                         self.map_rewards[i][j] = 0
@@ -45,6 +46,7 @@ class MapFile:                                      #Klasa zawierające dane pli
                     elif self.map_types[i][j] == 2:
                         self.map_rewards[i][j] = 100
                     else:
+                        self.map_types[i][j] = -2
                         self.map_rewards[i][j] = -100
 
     def MDP_algorithm(self):                        # Algorytm wyznaczania polityki ruchu
@@ -58,7 +60,7 @@ class MapFile:                                      #Klasa zawierające dane pli
             self.map_value_old = deepcopy(self.map_value)
             for i in range(self.map_height):
                 for j in range(self.map_width):
-                    if self.map_types[i][j] != 2 and self.map_types[i][j] != 0:
+                    if self.map_types[i][j] != 2 and self.map_types[i][j] != 0 and self.map_types[i][j] != -2:
                         self.map_value[i][j] = self.map_rewards[i][j] + self.gamma * self.best_action(i, j)
 
                         if abs(self.map_value[i][j] - self.map_value_old[i][j]) > difference:
@@ -68,7 +70,6 @@ class MapFile:                                      #Klasa zawierające dane pli
 
             if difference < 10e-4:
                 break
-
 
     def best_action(self, x, y):    # Wybór najlepszej akcji dla danego pola
         field_value = [0, 0, 0, 0]
